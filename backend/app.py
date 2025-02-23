@@ -14,6 +14,7 @@ CORS(app)  # Allow frontend requests
 @app.route('/')
 def home():
     return jsonify({"message": "Welcome to the College Service Support API!"}), 200
+
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.json
@@ -73,7 +74,17 @@ def login_user():
     conn.close()
 
     if user and bcrypt.checkpw(password.encode('utf-8'), user[3]):  # user[3] is password column
-        return jsonify({"message": "Login successful", "role": user[4]}), 200
+        role = user[4]  # user[4] contains the role
+
+        # Redirect based on role
+        if role == 'student':
+            return redirect(url_for('student_dashboard'))
+        elif role == 'department':
+            return redirect(url_for('department_dashboard'))
+        elif role == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return jsonify({"error": "Role not recognized"}), 400
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
@@ -128,6 +139,22 @@ def update_ticket_status(ticket_id):
     conn.close()
 
     return jsonify({"message": "Ticket status updated"}), 200
+
+# -------------------------------
+# 🏠 Dashboard Routes
+# -------------------------------
+
+@app.route('/student/dashboard')
+def student_dashboard():
+    return jsonify({"message": "Welcome to the Student Dashboard!"}), 200
+
+@app.route('/department/dashboard')
+def department_dashboard():
+    return jsonify({"message": "Welcome to the Department Dashboard!"}), 200
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    return jsonify({"message": "Welcome to the Admin Dashboard!"}), 200
 
 # -------------------------------
 # 🎯 Run the Flask App

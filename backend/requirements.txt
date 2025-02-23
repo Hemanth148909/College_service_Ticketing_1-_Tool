@@ -3,3 +3,5 @@ flask-cors
 sqlite3
 python-dotenv
 bcrypt
+axios
+react-router-dom
